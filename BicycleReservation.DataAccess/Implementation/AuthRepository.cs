@@ -109,46 +109,30 @@ namespace BicycleReservation.DataAccess.Implementation
                 {
                     throw new Exception("Check your credentials and try again");
                 }
-                var jwt = CreateToken(user);
                 bool verified = user.VerificationToken != null ? false : true;
-                if (!verified)
+                var jwt = string.Empty;
+                double credits = 0;
+                jwt = CreateToken(user);
+                if (user.Role == Role.Client)
                 {
-                    return new LoginResponse
-                    {
-                        User = new Domain.DTO.User.UserDTO()
-                        {
-                            Id = user.Id,
-                            Email = user.Email,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            Username = user.Username,
-                            Role = user.Role,
-                            Credits = 0,
-                            Verified = user.VerificationToken != null ? false : true,
-                            ImageUrl = user.ImageUrl,
-                        },
-                        Token = string.Empty,
-                    };
+                    credits = user.Credits.Credits;
                 }
-                else
+                return new LoginResponse
                 {
-                    return new LoginResponse
+                    User = new Domain.DTO.User.UserDTO()
                     {
-                        User = new Domain.DTO.User.UserDTO()
-                        {
-                            Id = user.Id,
-                            Email = user.Email,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            Username = user.Username,
-                            Role = user.Role,
-                            Credits = user.Credits.Credits,
-                            Verified = user.VerificationToken != null ? false : true,
-                            ImageUrl = user.ImageUrl,
-                        },
-                        Token = jwt,
-                    };
-                }
+                        Id = user.Id,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Username = user.Username,
+                        Role = user.Role,
+                        Credits = credits,
+                        Verified = verified,
+                        ImageUrl = user.ImageUrl,
+                    },
+                    Token = jwt,
+                };
             }
             catch (Exception ex)
             {
