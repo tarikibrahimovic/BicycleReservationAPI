@@ -1,4 +1,5 @@
-﻿using BicycleReservation.Domain.Entities;
+﻿using BicycleReservation.Domain.DTO.Station;
+using BicycleReservation.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace BicycleReservation.Domain.Repository
     public interface IStationRepository : IGenericRepository<Station, int>
     {
         public Task<List<Station>> GetAll();
+        public Task<StationResponse> GetStation(int id);
     }
 }

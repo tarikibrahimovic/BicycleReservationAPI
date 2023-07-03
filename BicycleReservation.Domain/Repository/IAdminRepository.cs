@@ -10,7 +10,7 @@ namespace BicycleReservation.Domain.Repository
 {
     public interface IAdminRepository : IGenericRepository<User, int>
     {
-        public Task<StationDTO> AddStation(AddStationRequest request);
+        public Task<Station> AddStation(AddStationRequest request);
         public Task<Bicycle> AddBicycle(int stationId, AddBicycleRequest request);
     }
 }

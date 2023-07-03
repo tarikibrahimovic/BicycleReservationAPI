@@ -21,7 +21,5 @@ namespace BicycleReservation.Domain.Entities
         public string Id { get; set; }
         public string LockCode { get; set; }
         public BicycleType Type { get; set; }
-        public int StationId { get; set; }
-        public Station Station { get; set; }
     }
 }

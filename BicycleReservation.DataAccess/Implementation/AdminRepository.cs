@@ -2,9 +2,11 @@
 using BicycleReservation.Domain.DTO.Admin;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,12 +14,15 @@ namespace BicycleReservation.DataAccess.Implementation
 {
     public class AdminRepository : GenericRepository<User, int>, IAdminRepository
     {
-        public AdminRepository(DataContext context) : base(context)
+        private readonly IHttpContextAccessor _acc;
+        public AdminRepository(DataContext context, IHttpContextAccessor acc) : base(context)
         {
+            _acc = acc;
         }
 
         public async Task<Bicycle> AddBicycle(int stationId, AddBicycleRequest request)
         {
+            int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
             var stationExists = context.Stations.Any(x => x.Id == stationId);
             if (!stationExists)
                 throw new Exception("Station does not exist");
@@ -29,16 +34,27 @@ namespace BicycleReservation.DataAccess.Implementation
             {
                 Id = request.Id,
                 LockCode = request.LockCode,
-                Type = request.Type,
-                StationId = stationId
+                Type = request.Type
+            };
+
+            var record = new Record
+            {
+                BicycleId = request.Id,
+                UserId = userId,
+                StartDate = DateTime.UtcNow,
+                NumberOfHours = null,
+                CostPerHour = null,
+                StartStationId = stationId,
+                EndStationId = stationId
             };
 
             await context.Bicycles.AddAsync(bicycle);
+            await context.Records.AddAsync(record);
             await context.SaveChangesAsync();
             return bicycle;
         }
 
-        public async Task<StationDTO> AddStation(AddStationRequest request)
+        public async Task<Station> AddStation(AddStationRequest request)
         {
             var station = new Station
             {
@@ -49,12 +65,7 @@ namespace BicycleReservation.DataAccess.Implementation
 
             await context.Stations.AddAsync(station);
             await context.SaveChangesAsync();
-            return new StationDTO
-            {
-                Name = station.Name,
-                Lat = station.Lat,
-                Lng = station.Lng
-            };
+            return station;
         }
     }
 }

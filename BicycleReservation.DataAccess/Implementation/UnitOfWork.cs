@@ -20,7 +20,7 @@ namespace BicycleReservation.DataAccess.Implementation
             this.acc = acc;
             UserRepository = new UserRepository(context, _configuration, acc, this);
             AuthRepository = new AuthRepository(context, _configuration, acc);
-            AdminRepository = new AdminRepository(context);
+            AdminRepository = new AdminRepository(context, acc);
             StationRepository = new StationRepository(context);
         }
 

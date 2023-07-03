@@ -21,5 +21,12 @@ namespace BicycleReservation.API.Controllers
             var stations = await unitOfWork.StationRepository.GetAll();
             return Ok(stations);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetStation(int id)
+        {
+            var stations = await unitOfWork.StationRepository.GetStation(id);
+            return Ok(stations);
+        }
     }
 }
