@@ -13,6 +13,7 @@ namespace BicycleReservation.Domain.Repository
         IAuthRepository AuthRepository { get; }
         IAdminRepository AdminRepository { get; }
         IStationRepository StationRepository { get; }
+        IBicycleRepository BicycleRepository { get; }
         int Save();
     }
 }

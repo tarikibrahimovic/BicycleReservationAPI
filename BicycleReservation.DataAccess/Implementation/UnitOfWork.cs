@@ -21,13 +21,15 @@ namespace BicycleReservation.DataAccess.Implementation
             UserRepository = new UserRepository(context, _configuration, acc, this);
             AuthRepository = new AuthRepository(context, _configuration, acc);
             AdminRepository = new AdminRepository(context, acc);
-            StationRepository = new StationRepository(context);
+            StationRepository = new StationRepository(context, acc);
+            BicycleRepository = new BicycleRepository(context);
         }
 
         public IUserRepository UserRepository { get; set; }
         public IAuthRepository AuthRepository { get; set; }
         public IAdminRepository AdminRepository { get; set; }
         public IStationRepository StationRepository { get; set; }
+        public IBicycleRepository BicycleRepository { get; set; }
         
         public int Save()
         {

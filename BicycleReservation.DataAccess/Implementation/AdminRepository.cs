@@ -28,12 +28,21 @@ namespace BicycleReservation.DataAccess.Implementation
                 throw new Exception("Station does not exist");
             var bicycleExists = context.Bicycles.Any(x => x.Id == request.Id);
             if (bicycleExists)
-                throw new Exception("Bicycle already exists");
+                throw new Exception("Bicycle ID already exists");
+
+
+            var lockCode = "";
+            var random = new Random();
+            for (int i = 0; i < 6; i++)
+            {
+                lockCode += random.Next(0, 9).ToString();
+            }
 
             var bicycle = new Bicycle
             {
                 Id = request.Id,
-                LockCode = request.LockCode,
+                Naziv = request.Naziv,
+                LockCode = lockCode,
                 Type = request.Type
             };
 
