@@ -333,11 +333,35 @@ namespace BicycleReservation.DataAccess.Implementation
             {
                 int userId = int.Parse(acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
                 User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
-                if (user == null)
+                bool verified = user.VerificationToken != null ? false : true;
+                if (user == null || !verified)
                 {
                     throw new Exception("User not found");
                 }
+                //var jwt = CreateToken(user);
+                //return new LoginResponse
+                //{
+                //    User = new Domain.DTO.User.UserDTO()
+                //    {
+                //        Id = user.Id,
+                //        Email = user.Email,
+                //        FirstName = user.FirstName,
+                //        LastName = user.LastName,
+                //        Username = user.Username,
+                //        Role = user.Role,
+                //        Credits = user.Credits.Credits,
+                //        Verified = user.VerificationToken != null ? false : true,
+                //        ImageUrl = user.ImageUrl,
+                //    },
+                //    Token = jwt,
+                //};
+                //var jwt = string.Empty;
+                double credits = 0;
                 var jwt = CreateToken(user);
+                if (user.Role == Role.Client)
+                {
+                    credits = user.Credits.Credits;
+                }
                 return new LoginResponse
                 {
                     User = new Domain.DTO.User.UserDTO()
@@ -348,8 +372,8 @@ namespace BicycleReservation.DataAccess.Implementation
                         LastName = user.LastName,
                         Username = user.Username,
                         Role = user.Role,
-                        Credits = user.Credits.Credits,
-                        Verified = user.VerificationToken != null ? false : true,
+                        Credits = credits,
+                        Verified = verified,
                         ImageUrl = user.ImageUrl,
                     },
                     Token = jwt,
