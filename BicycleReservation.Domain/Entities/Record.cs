@@ -17,7 +17,7 @@ namespace BicycleReservation.Domain.Entities
         public User User { get; set; }
         public DateTime StartDate { get; set; }
         public int? NumberOfHours { get; set; }
-        public float? CostPerHour { get; set; }
+        public double? CostPerHour { get; set; }
         public int? StartStationId { get; set; }
         public Station StartStation { get; set; }
         public int? EndStationId { get; set; }
