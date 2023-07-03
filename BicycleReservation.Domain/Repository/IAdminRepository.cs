@@ -12,5 +12,7 @@ namespace BicycleReservation.Domain.Repository
     {
         public Task<Station> AddStation(AddStationRequest request);
         public Task<Bicycle> AddBicycle(int stationId, AddBicycleRequest request);
+        public Task<bool> DeleteUser(int id);
+        public Task<bool> PromoteUser(PromoteRequest request);
     }
 }

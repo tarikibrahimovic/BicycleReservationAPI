@@ -39,7 +39,7 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
@@ -84,7 +84,7 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
@@ -136,7 +136,7 @@ namespace BicycleReservation.DataAccess.Implementation
                     throw new Exception("There is no Image");
                 }
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
@@ -186,7 +186,7 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
@@ -234,7 +234,7 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = GetById(userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
@@ -251,14 +251,17 @@ namespace BicycleReservation.DataAccess.Implementation
                         ResourceType = ResourceType.Image
                     };
                     cloudinary.Destroy(deletionParams);
-                    Delete(user);
-                    _unitOfWork.Save();
+                    //Delete(user);
+                    user.IsActive = false;
+                    //_unitOfWork.Save();
+                    await context.SaveChangesAsync();
                     return true;
                 }
                 else
                 {
-                    Delete(user);
-                    _unitOfWork.Save();
+                    user.IsActive = false;
+                    //_unitOfWork.Save();
+                    await context.SaveChangesAsync();
                     return true;
                 }
             }
@@ -273,7 +276,7 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 if (user == null || user.Role != Domain.Entities.Role.Client || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");

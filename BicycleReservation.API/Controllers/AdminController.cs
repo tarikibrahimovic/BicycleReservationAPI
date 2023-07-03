@@ -32,5 +32,19 @@ namespace BicycleReservation.API.Controllers
             return Ok(bicycle);
         }
 
+        [HttpDelete("user/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var result = await unitOfWork.AdminRepository.DeleteUser(id);
+            return Ok(result);
+        }
+
+        [HttpPost("promote")]
+        public async Task<IActionResult> PromoteUser([FromBody] PromoteRequest request)
+        {
+            var result = await unitOfWork.AdminRepository.PromoteUser(request);
+            return Ok(result);
+        }
+
     }
 }

@@ -26,6 +26,7 @@ namespace BicycleReservation.Domain.Entities
         public string? ImageUrl { get; set; } = string.Empty;
         public string? VerificationToken { get; set; } = string.Empty;
         public string? ForgotPasswordToken { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
         public Role Role { get; set; }
         public UserCredits? Credits { get; set; }
     }

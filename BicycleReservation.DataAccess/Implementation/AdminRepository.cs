@@ -3,6 +3,7 @@ using BicycleReservation.Domain.DTO.Admin;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +76,65 @@ namespace BicycleReservation.DataAccess.Implementation
             await context.Stations.AddAsync(station);
             await context.SaveChangesAsync();
             return station;
+        }
+        public async Task<bool> DeleteUser(int id)
+        {
+            try
+            {
+                var user = await context.Users.FirstOrDefaultAsync(x => x.Id == id && x.IsActive == true);
+                if (user == null)
+                    throw new Exception("User does not exist!");
+                if (user.Role == Role.Admin)
+                    throw new Exception("Cannot delete admin user!");
+                user.IsActive = false;
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<bool> PromoteUser(PromoteRequest request)
+        {
+            try
+            {
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId && x.IsActive == true);
+                if(user == null)
+                    throw new Exception("User does not exist!");
+                if(user.Role == Role.Admin)
+                    throw new Exception("User is already admin!");
+                if(request.Role == user.Role)
+                {
+                    throw new Exception("User is already that role!");
+                }
+                if(user.Role == Role.Client)
+                {
+                    var credits = await context.Credits.FirstOrDefaultAsync(x => x.UserId == user.Id);
+                    context.Credits.Remove(credits);
+                    user.Credits = null;
+                }
+                user.Role = request.Role;
+                if(request.Role == Role.Client)
+                {
+                    var credits = new UserCredits
+                    {
+                        UserId = user.Id,
+                        Credits = 100
+                    };
+                    await context.Credits.AddAsync(credits);
+                    user.Credits = credits;
+                }
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

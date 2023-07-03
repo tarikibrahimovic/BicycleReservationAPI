@@ -104,7 +104,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
                 if (user == null || !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
                 {
                     throw new Exception("Check your credentials and try again");
@@ -168,6 +168,7 @@ namespace BicycleReservation.DataAccess.Implementation
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,
                     Role = Role.Client,
+                    IsActive = true,
                     VerificationToken = code.ToString(),
                 };
 
@@ -211,7 +212,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -254,7 +255,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -278,7 +279,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -306,7 +307,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -332,30 +333,12 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId && x.IsActive == true);
                 bool verified = user.VerificationToken != null ? false : true;
                 if (user == null || !verified)
                 {
                     throw new Exception("User not found");
                 }
-                //var jwt = CreateToken(user);
-                //return new LoginResponse
-                //{
-                //    User = new Domain.DTO.User.UserDTO()
-                //    {
-                //        Id = user.Id,
-                //        Email = user.Email,
-                //        FirstName = user.FirstName,
-                //        LastName = user.LastName,
-                //        Username = user.Username,
-                //        Role = user.Role,
-                //        Credits = user.Credits.Credits,
-                //        Verified = user.VerificationToken != null ? false : true,
-                //        ImageUrl = user.ImageUrl,
-                //    },
-                //    Token = jwt,
-                //};
-                //var jwt = string.Empty;
                 double credits = 0;
                 var jwt = CreateToken(user);
                 if (user.Role == Role.Client)
