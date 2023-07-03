@@ -76,5 +76,6 @@ namespace BicycleReservation.DataAccess.Implementation
             await context.SaveChangesAsync();
             return station;
         }
+
     }
 }
