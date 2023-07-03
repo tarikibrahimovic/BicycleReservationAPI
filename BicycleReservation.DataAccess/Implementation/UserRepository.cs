@@ -6,9 +6,13 @@ using BicycleReservation.Domain.Repository;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace BicycleReservation.DataAccess.Implementation
 {
@@ -30,13 +34,13 @@ namespace BicycleReservation.DataAccess.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> ChangeUsername(ChangeUsernameRequest request)
+        public async Task<LoginResponse> ChangeUsername(ChangeUsernameRequest request)
         {
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = GetById(userId);
-                if(user == null)
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
                 }
@@ -50,22 +54,38 @@ namespace BicycleReservation.DataAccess.Implementation
                 }
                 user.Username = request.Username;
                 Update(user);
-                _unitOfWork.Save();
-                return true;
+                //_unitOfWork.Save();
+                await context.SaveChangesAsync();
+                return new LoginResponse
+                {
+                    User = new Domain.DTO.User.UserDTO()
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Username = user.Username,
+                        Role = user.Role,
+                        Credits = user.Credits.Credits,
+                        Verified = user.VerificationToken != null ? false : true,
+                        ImageUrl = user.ImageUrl,
+                    },
+                    Token = CreateToken(user),
+                };
             }
             catch (Exception ex)
             {
-                throw new Exception("Error");
+                throw new Exception(ex.Message);
             }
         }
 
-        public async Task<bool> ChangePassword(ChangePasswordRequest request)
+        public async Task<LoginResponse> ChangePassword(ChangePasswordRequest request)
         {
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = GetById(userId);
-                if (user == null)
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
                 }
@@ -82,16 +102,32 @@ namespace BicycleReservation.DataAccess.Implementation
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
                 Update(user);
-                _unitOfWork.Save();
-                return true;
+                //_unitOfWork.Save();
+                await context.SaveChangesAsync();
+                return new LoginResponse
+                {
+                    User = new Domain.DTO.User.UserDTO()
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Username = user.Username,
+                        Role = user.Role,
+                        Credits = user.Credits.Credits,
+                        Verified = user.VerificationToken != null ? false : true,
+                        ImageUrl = user.ImageUrl,
+                    },
+                    Token = CreateToken(user),
+                };
             }
             catch (Exception ex)
             {
-                throw new Exception("User not found");
+                throw new Exception(ex.Message);
             }
         }
 
-        public async Task<LinkResponse> UploadImage(UploadImage image)
+        public async Task<LoginResponse> UploadImage(UploadImage image)
         {
             try
             {
@@ -100,8 +136,8 @@ namespace BicycleReservation.DataAccess.Implementation
                     throw new Exception("There is no Image");
                 }
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = GetById(userId);
-                if (user == null)
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
                 }
@@ -120,21 +156,38 @@ namespace BicycleReservation.DataAccess.Implementation
                 };
                 var uploadResult = cloudinary.Upload(uploadParams);
                 user.ImageUrl = uploadResult.Url.ToString();
-                _unitOfWork.Save();
-                return new LinkResponse { ImageUrl = uploadResult.Uri.ToString() };
+                //_unitOfWork.Save();
+                await context.SaveChangesAsync();
+                //return new LinkResponse { ImageUrl = uploadResult.Uri.ToString() };
+                return new LoginResponse
+                {
+                    User = new Domain.DTO.User.UserDTO()
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Username = user.Username,
+                        Role = user.Role,
+                        Credits = user.Credits.Credits,
+                        Verified = user.VerificationToken != null ? false : true,
+                        ImageUrl = user.ImageUrl,
+                    },
+                    Token = CreateToken(user),
+                };
             }
             catch (Exception ex)
             {
-                throw new Exception("Error");
+                throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> DeleteImage()
+        public async Task<LoginResponse> DeleteImage()
         {
             try
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = GetById(userId);
-                if (user == null)
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
                 }
@@ -148,8 +201,23 @@ namespace BicycleReservation.DataAccess.Implementation
                     };
 
                     cloudinary.Destroy(deletionParams);
-                    context.SaveChanges();
-                    return true;
+                    await context.SaveChangesAsync();
+                    return new LoginResponse
+                    {
+                        User = new Domain.DTO.User.UserDTO()
+                        {
+                            Id = user.Id,
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Username = user.Username,
+                            Role = user.Role,
+                            Credits = user.Credits.Credits,
+                            Verified = user.VerificationToken != null ? false : true,
+                            ImageUrl = user.ImageUrl,
+                        },
+                        Token = CreateToken(user),
+                    };
                 }
                 else
                 {
@@ -158,7 +226,7 @@ namespace BicycleReservation.DataAccess.Implementation
             }
             catch (Exception ex)
             {
-                throw new Exception("Error");
+                throw new Exception(ex.Message);
             }
         }
         public async Task<bool> DeleteUser(DeleteAccRequest request)
@@ -167,7 +235,7 @@ namespace BicycleReservation.DataAccess.Implementation
             {
                 int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
                 User user = GetById(userId);
-                if (user == null)
+                if (user == null || user.VerificationToken != null)
                 {
                     throw new Exception("User not found");
                 }
@@ -196,7 +264,42 @@ namespace BicycleReservation.DataAccess.Implementation
             }
             catch (Exception ex)
             {
-                throw new Exception("Error");
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<LoginResponse> DepositCredits(DepositCreditsRequest request)
+        {
+            try
+            {
+                int userId = int.Parse(_acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
+                if (user == null || user.Role != Domain.Entities.Role.Client || user.VerificationToken != null)
+                {
+                    throw new Exception("User not found");
+                }
+                user.Credits.Credits += request.Credits;
+                await context.SaveChangesAsync();
+                return new LoginResponse
+                {
+                    User = new Domain.DTO.User.UserDTO()
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Username = user.Username,
+                        Role = user.Role,
+                        Credits = user.Credits.Credits,
+                        Verified = user.VerificationToken != null ? false : true,
+                        ImageUrl = user.ImageUrl,
+                    },
+                    Token = CreateToken(user),
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
@@ -215,6 +318,29 @@ namespace BicycleReservation.DataAccess.Implementation
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        public string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.PrimarySid, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Token").Value));
+
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: cred
+            );
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
     }
 }

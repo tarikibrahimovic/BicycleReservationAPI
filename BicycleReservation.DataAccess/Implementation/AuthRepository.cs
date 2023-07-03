@@ -104,7 +104,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email);
                 if (user == null || !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
                 {
                     throw new Exception("Check your credentials and try again");
@@ -123,6 +123,7 @@ namespace BicycleReservation.DataAccess.Implementation
                             LastName = user.LastName,
                             Username = user.Username,
                             Role = user.Role,
+                            Credits = 0,
                             Verified = user.VerificationToken != null ? false : true,
                             ImageUrl = user.ImageUrl,
                         },
@@ -141,6 +142,7 @@ namespace BicycleReservation.DataAccess.Implementation
                             LastName = user.LastName,
                             Username = user.Username,
                             Role = user.Role,
+                            Credits = user.Credits.Credits,
                             Verified = user.VerificationToken != null ? false : true,
                             ImageUrl = user.ImageUrl,
                         },
@@ -150,7 +152,7 @@ namespace BicycleReservation.DataAccess.Implementation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<LoginResponse> Register(RegisterRequest request)
@@ -185,8 +187,17 @@ namespace BicycleReservation.DataAccess.Implementation
                     VerificationToken = code.ToString(),
                 };
 
+                UserCredits credits = new UserCredits
+                {
+                    Credits = 100,
+                    User = user,
+                };
+
+                user.Credits = credits;
+
                 // SendEmail(request.Email, "Your verification token is:" + code.ToString());
                 await context.Users.AddAsync(user);
+                await context.Credits.AddAsync(credits);
                 await context.SaveChangesAsync();
 
                 return new LoginResponse
@@ -199,6 +210,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         LastName = user.LastName,
                         Username = user.Username,
                         Role = user.Role,
+                        Credits = user.Credits.Credits,
                         Verified = user.VerificationToken != null ? false : true,
                         ImageUrl = user.ImageUrl,
                     },
@@ -208,14 +220,14 @@ namespace BicycleReservation.DataAccess.Implementation
             catch (Exception ex)
             {
 
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<LoginResponse> Verify(VerifyRequest request)
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -241,6 +253,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         LastName = user.LastName,
                         Username = user.Username,
                         Role = user.Role,
+                        Credits = user.Credits.Credits,
                         Verified = user.VerificationToken != null ? false : true,
                         ImageUrl = user.ImageUrl,
                     },
@@ -250,7 +263,7 @@ namespace BicycleReservation.DataAccess.Implementation
             catch (Exception ex)
             {
 
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<SendEmailRequest> ForgotPassword(SendEmailRequest request)
@@ -274,7 +287,7 @@ namespace BicycleReservation.DataAccess.Implementation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<SendEmailRequest> ResetPassword(ResetPassword request)
@@ -302,7 +315,7 @@ namespace BicycleReservation.DataAccess.Implementation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<SendEmailRequest> ResendVerificationToken(SendEmailRequest request)
@@ -327,7 +340,7 @@ namespace BicycleReservation.DataAccess.Implementation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<LoginResponse> CheckToken()
@@ -335,7 +348,7 @@ namespace BicycleReservation.DataAccess.Implementation
             try
             {
                 int userId = int.Parse(acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
-                User user = GetById(userId);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Id == userId);
                 if (user == null)
                 {
                     throw new Exception("User not found");
@@ -351,6 +364,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         LastName = user.LastName,
                         Username = user.Username,
                         Role = user.Role,
+                        Credits = user.Credits.Credits,
                         Verified = user.VerificationToken != null ? false : true,
                         ImageUrl = user.ImageUrl,
                     },
@@ -360,7 +374,7 @@ namespace BicycleReservation.DataAccess.Implementation
             catch (Exception ex)
             {
 
-                throw new Exception("Error");
+                throw new Exception(ex.Message);
             }
         }
     }

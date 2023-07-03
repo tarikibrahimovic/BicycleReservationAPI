@@ -32,7 +32,7 @@ namespace BicycleReservation.API.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             var userFromDb = await unitOfWork.UserRepository.ChangePassword(request);
-            if (userFromDb == false)
+            if (userFromDb == null)
             {
                 return BadRequest();
             }
@@ -54,7 +54,7 @@ namespace BicycleReservation.API.Controllers
         public async Task<IActionResult> DeleteProfilePicture()
         {
             var userFromDb = await unitOfWork.UserRepository.DeleteImage();
-            if (userFromDb == false)
+            if (userFromDb == null)
             {
                 return BadRequest();
             }
@@ -66,6 +66,17 @@ namespace BicycleReservation.API.Controllers
         {
             var userFromDb = await unitOfWork.UserRepository.DeleteUser(request);
             if (userFromDb == false)
+            {
+                return BadRequest();
+            }
+            return Ok(userFromDb);
+        }
+
+        [HttpPost("deposit-credits")]
+        public async Task<IActionResult> DepositCredits([FromBody] DepositCreditsRequest request)
+        {
+            var userFromDb = await unitOfWork.UserRepository.DepositCredits(request);
+            if (userFromDb == null)
             {
                 return BadRequest();
             }
