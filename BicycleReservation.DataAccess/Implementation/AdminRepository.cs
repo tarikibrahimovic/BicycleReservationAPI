@@ -42,7 +42,7 @@ namespace BicycleReservation.DataAccess.Implementation
             var bicycle = new Bicycle
             {
                 Id = request.Id,
-                Naziv = request.Naziv,
+                Name = request.Name,
                 LockCode = lockCode,
                 Type = request.Type
             };

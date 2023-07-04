@@ -10,7 +10,7 @@ namespace BicycleReservation.Domain.DTO.Admin
     public class AddBicycleRequest
     {
         public string Id { get; set; }
-        public string Naziv { get; set; }
+        public string Name { get; set; }
         public BicycleType Type { get; set; }
     }
 }

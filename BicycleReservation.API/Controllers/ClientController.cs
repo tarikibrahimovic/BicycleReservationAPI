@@ -31,5 +31,12 @@ namespace BicycleReservation.API.Controllers
             var response = await unitOfWork.ClientRepository.ReturnBicycle(request);
             return Ok(response);
         }
+
+        [HttpGet("rented")]
+        public async Task<IActionResult> GetRentedBicycle()
+        {
+            var response = await unitOfWork.ClientRepository.GetRents();
+            return Ok(response);
+        }
     }
 }

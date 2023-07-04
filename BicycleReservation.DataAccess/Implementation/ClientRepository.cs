@@ -3,6 +3,7 @@ using BicycleReservation.Domain.DTO.Client;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,12 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             this.acc = acc;
         }
+
         public async Task<BicycleRentResponse> RentBicycle(BicycleRentRequest request)
         {
+            if(request.NumberOfHours < 1 || request.NumberOfHours > 24)
+                throw new Exception("Invalid number of hours");
+
             int userId = int.Parse(acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
             if(context.Records.Any(r => r.UserId == userId && r.EndStationId == null))
                 throw new Exception("You already have a bicycle rented");
@@ -75,10 +80,24 @@ namespace BicycleReservation.DataAccess.Implementation
             var station = context.Stations.FirstOrDefault(s => s.Id == request.StationId) ?? throw new Exception("Station not found");
             record.EndStationId = station.Id;
 
+            var bicycle = context.Bicycles.FirstOrDefault(b => b.Id == record.BicycleId);
+            var newLockCode = "";
+            for (int i = 0; i < 6; i++)
+                newLockCode += new Random().Next(0, 10);
+            bicycle.LockCode = newLockCode;
+
+            await context.SaveChangesAsync();
+
             return new ReturnBicycleResponse
             {
                 Message = "Bicycle returned successfully",
             };
+        }
+
+        public async Task<List<Record>> GetRents()
+        {
+            int userId = int.Parse(acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
+            return await context.Records.Include(r => r.Bicycle).Include(r => r.StartStation).Include(r => r.EndStation).Where(r => r.UserId == userId).OrderByDescending(r => r.StartDate).ToListAsync();
         }
     }
 }

@@ -12,5 +12,6 @@ namespace BicycleReservation.Domain.Repository
     {
         public Task<BicycleRentResponse> RentBicycle(BicycleRentRequest request);
         public Task<ReturnBicycleResponse> ReturnBicycle(ReturnBicycleRequest request);
+        public Task<List<Record>> GetRents();
     }
 }
