@@ -4,6 +4,7 @@ using BicycleReservation.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BicycleReservation.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230703215141_CostPerHourToDouble")]
+    partial class CostPerHourToDouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace BicycleReservation.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Naziv")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -132,9 +135,6 @@ namespace BicycleReservation.DataAccess.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -165,10 +165,9 @@ namespace BicycleReservation.DataAccess.Migrations
                             Id = -1,
                             Email = "admin@admin.com",
                             FirstName = "Admin",
-                            IsActive = true,
                             LastName = "Admin",
-                            PasswordHash = new byte[] { 239, 166, 226, 42, 30, 105, 37, 153, 11, 80, 202, 69, 150, 8, 176, 243, 23, 125, 147, 251, 215, 196, 183, 225, 96, 42, 128, 247, 29, 96, 187, 177, 182, 47, 85, 15, 94, 247, 3, 63, 170, 14, 181, 60, 158, 224, 104, 84, 56, 43, 156, 236, 222, 76, 51, 166, 113, 17, 97, 109, 9, 181, 182, 200 },
-                            PasswordSalt = new byte[] { 7, 105, 20, 249, 120, 132, 252, 117, 158, 13, 10, 79, 59, 15, 55, 77, 171, 116, 84, 39, 66, 207, 174, 4, 73, 101, 243, 125, 184, 19, 167, 43, 28, 132, 72, 22, 217, 203, 13, 190, 239, 202, 123, 80, 171, 138, 96, 210, 7, 133, 36, 134, 210, 42, 16, 82, 44, 34, 126, 9, 235, 162, 139, 227, 206, 196, 10, 238, 136, 180, 122, 34, 33, 211, 97, 113, 50, 200, 7, 219, 88, 82, 252, 129, 59, 229, 235, 113, 148, 61, 151, 172, 132, 151, 234, 30, 102, 225, 43, 87, 41, 49, 101, 59, 208, 14, 192, 121, 21, 222, 217, 209, 209, 35, 67, 111, 8, 6, 232, 150, 139, 194, 9, 89, 171, 154, 11, 71 },
+                            PasswordHash = new byte[] { 56, 240, 91, 29, 6, 139, 120, 251, 29, 37, 205, 126, 1, 223, 49, 230, 109, 194, 210, 111, 58, 137, 54, 118, 114, 76, 249, 45, 53, 26, 242, 196, 194, 136, 48, 212, 239, 107, 86, 77, 189, 208, 127, 223, 112, 10, 254, 205, 13, 74, 110, 127, 175, 205, 248, 42, 33, 90, 201, 34, 22, 66, 30, 176 },
+                            PasswordSalt = new byte[] { 209, 135, 44, 98, 216, 31, 149, 243, 146, 192, 37, 123, 90, 138, 20, 138, 176, 116, 172, 67, 175, 204, 197, 128, 139, 36, 24, 204, 27, 144, 176, 239, 108, 131, 177, 37, 236, 211, 191, 130, 121, 188, 218, 178, 28, 83, 74, 212, 209, 4, 228, 238, 79, 232, 131, 200, 32, 70, 154, 190, 111, 99, 16, 40, 210, 237, 200, 105, 20, 15, 92, 140, 247, 247, 40, 84, 217, 114, 237, 49, 29, 122, 224, 71, 231, 169, 71, 144, 229, 208, 90, 141, 159, 79, 146, 62, 63, 58, 160, 10, 129, 209, 127, 2, 194, 210, 249, 53, 133, 178, 249, 192, 233, 92, 54, 38, 234, 9, 153, 234, 193, 127, 220, 153, 124, 93, 127, 78 },
                             Role = 3,
                             Username = "admin"
                         });

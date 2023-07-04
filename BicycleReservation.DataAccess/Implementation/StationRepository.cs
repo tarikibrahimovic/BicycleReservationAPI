@@ -28,6 +28,7 @@ namespace BicycleReservation.DataAccess.Implementation
 
         public async Task<StationResponse> GetStation(int id)
         {
+            var converted = int.TryParse(_acc?.HttpContext?.User?.FindFirst(ClaimTypes.PrimarySid)?.Value, out int userId);
             var station = await Task.Run(() => context.Stations.FirstOrDefault(x => x.Id == id)) ?? throw new Exception("Station does not exist");
 
             var records = context.Records.Include(r => r.Bicycle).Join(context.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
@@ -40,18 +41,24 @@ namespace BicycleReservation.DataAccess.Implementation
                 bicycles = await Task.Run(() => records.Where(x => x.EndStationId == id).Select(x => x.Bicycle).ToList());
 
 
-            string? userRole = _acc.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
+            string? userRole = _acc?.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
 
             if(userRole == null || (userRole != Role.Admin.ToString() && userRole != Role.Servicer.ToString()))
                 bicycles.ForEach(x => x.LockCode = "");
 
-            var rl = Role.Admin.ToString();
-
-            return new StationResponse
+            var response = new StationResponse
             {
                 Station = station,
                 Bicycles = bicycles
             };
+
+            if(converted)
+            {
+                var hasRentedBike = context.Records.Any(x => x.UserId == userId && x.EndStationId == null);
+                response.HasRentedBike = hasRentedBike;
+            }
+
+            return response;
         }
     }
 }

@@ -4,6 +4,7 @@ using BicycleReservation.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BicycleReservation.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230703214755_DeletedStationDeletedColumn")]
+    partial class DeletedStationDeletedColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace BicycleReservation.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Naziv")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -56,8 +59,8 @@ namespace BicycleReservation.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double?>("CostPerHour")
-                        .HasColumnType("float");
+                    b.Property<float?>("CostPerHour")
+                        .HasColumnType("real");
 
                     b.Property<int?>("EndStationId")
                         .HasColumnType("int");
@@ -132,9 +135,6 @@ namespace BicycleReservation.DataAccess.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -165,10 +165,9 @@ namespace BicycleReservation.DataAccess.Migrations
                             Id = -1,
                             Email = "admin@admin.com",
                             FirstName = "Admin",
-                            IsActive = true,
                             LastName = "Admin",
-                            PasswordHash = new byte[] { 239, 166, 226, 42, 30, 105, 37, 153, 11, 80, 202, 69, 150, 8, 176, 243, 23, 125, 147, 251, 215, 196, 183, 225, 96, 42, 128, 247, 29, 96, 187, 177, 182, 47, 85, 15, 94, 247, 3, 63, 170, 14, 181, 60, 158, 224, 104, 84, 56, 43, 156, 236, 222, 76, 51, 166, 113, 17, 97, 109, 9, 181, 182, 200 },
-                            PasswordSalt = new byte[] { 7, 105, 20, 249, 120, 132, 252, 117, 158, 13, 10, 79, 59, 15, 55, 77, 171, 116, 84, 39, 66, 207, 174, 4, 73, 101, 243, 125, 184, 19, 167, 43, 28, 132, 72, 22, 217, 203, 13, 190, 239, 202, 123, 80, 171, 138, 96, 210, 7, 133, 36, 134, 210, 42, 16, 82, 44, 34, 126, 9, 235, 162, 139, 227, 206, 196, 10, 238, 136, 180, 122, 34, 33, 211, 97, 113, 50, 200, 7, 219, 88, 82, 252, 129, 59, 229, 235, 113, 148, 61, 151, 172, 132, 151, 234, 30, 102, 225, 43, 87, 41, 49, 101, 59, 208, 14, 192, 121, 21, 222, 217, 209, 209, 35, 67, 111, 8, 6, 232, 150, 139, 194, 9, 89, 171, 154, 11, 71 },
+                            PasswordHash = new byte[] { 233, 252, 199, 246, 218, 29, 228, 57, 234, 34, 202, 102, 2, 75, 199, 186, 249, 18, 131, 60, 95, 11, 27, 72, 79, 211, 224, 242, 140, 134, 49, 208, 33, 114, 245, 185, 76, 97, 93, 21, 91, 91, 164, 98, 166, 198, 212, 133, 173, 59, 73, 217, 83, 58, 175, 127, 73, 217, 91, 195, 175, 116, 126, 15 },
+                            PasswordSalt = new byte[] { 208, 217, 156, 91, 83, 172, 3, 34, 3, 87, 217, 33, 38, 120, 66, 192, 195, 216, 155, 146, 68, 153, 117, 176, 158, 81, 178, 198, 170, 188, 253, 174, 47, 186, 124, 253, 199, 165, 223, 226, 182, 99, 47, 76, 21, 93, 49, 74, 79, 166, 132, 230, 186, 242, 97, 68, 45, 16, 56, 191, 52, 140, 254, 90, 63, 222, 12, 123, 56, 247, 245, 178, 67, 246, 175, 166, 112, 0, 82, 149, 60, 237, 49, 125, 150, 40, 28, 209, 182, 202, 53, 167, 206, 0, 227, 42, 86, 100, 188, 255, 94, 13, 216, 86, 85, 226, 19, 28, 69, 98, 139, 150, 19, 27, 78, 244, 146, 16, 95, 75, 43, 49, 23, 167, 167, 176, 7, 47 },
                             Role = 3,
                             Username = "admin"
                         });

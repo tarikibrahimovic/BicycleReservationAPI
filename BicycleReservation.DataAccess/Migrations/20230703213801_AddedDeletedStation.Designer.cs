@@ -4,6 +4,7 @@ using BicycleReservation.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BicycleReservation.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230703213801_AddedDeletedStation")]
+    partial class AddedDeletedStation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace BicycleReservation.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Naziv")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -56,8 +59,8 @@ namespace BicycleReservation.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double?>("CostPerHour")
-                        .HasColumnType("float");
+                    b.Property<float?>("CostPerHour")
+                        .HasColumnType("real");
 
                     b.Property<int?>("EndStationId")
                         .HasColumnType("int");
@@ -94,6 +97,9 @@ namespace BicycleReservation.DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<double>("Lat")
                         .HasColumnType("float");
@@ -132,9 +138,6 @@ namespace BicycleReservation.DataAccess.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -165,10 +168,9 @@ namespace BicycleReservation.DataAccess.Migrations
                             Id = -1,
                             Email = "admin@admin.com",
                             FirstName = "Admin",
-                            IsActive = true,
                             LastName = "Admin",
-                            PasswordHash = new byte[] { 239, 166, 226, 42, 30, 105, 37, 153, 11, 80, 202, 69, 150, 8, 176, 243, 23, 125, 147, 251, 215, 196, 183, 225, 96, 42, 128, 247, 29, 96, 187, 177, 182, 47, 85, 15, 94, 247, 3, 63, 170, 14, 181, 60, 158, 224, 104, 84, 56, 43, 156, 236, 222, 76, 51, 166, 113, 17, 97, 109, 9, 181, 182, 200 },
-                            PasswordSalt = new byte[] { 7, 105, 20, 249, 120, 132, 252, 117, 158, 13, 10, 79, 59, 15, 55, 77, 171, 116, 84, 39, 66, 207, 174, 4, 73, 101, 243, 125, 184, 19, 167, 43, 28, 132, 72, 22, 217, 203, 13, 190, 239, 202, 123, 80, 171, 138, 96, 210, 7, 133, 36, 134, 210, 42, 16, 82, 44, 34, 126, 9, 235, 162, 139, 227, 206, 196, 10, 238, 136, 180, 122, 34, 33, 211, 97, 113, 50, 200, 7, 219, 88, 82, 252, 129, 59, 229, 235, 113, 148, 61, 151, 172, 132, 151, 234, 30, 102, 225, 43, 87, 41, 49, 101, 59, 208, 14, 192, 121, 21, 222, 217, 209, 209, 35, 67, 111, 8, 6, 232, 150, 139, 194, 9, 89, 171, 154, 11, 71 },
+                            PasswordHash = new byte[] { 117, 177, 229, 204, 250, 202, 252, 32, 160, 60, 9, 62, 226, 247, 212, 37, 211, 83, 38, 240, 104, 73, 12, 40, 26, 133, 57, 253, 227, 38, 111, 119, 51, 125, 96, 112, 10, 157, 168, 55, 45, 96, 117, 74, 240, 181, 209, 254, 216, 148, 169, 45, 56, 246, 2, 254, 236, 213, 136, 172, 97, 144, 92, 190 },
+                            PasswordSalt = new byte[] { 132, 27, 190, 135, 41, 178, 195, 233, 29, 163, 17, 9, 201, 119, 206, 135, 244, 159, 207, 4, 204, 168, 106, 249, 23, 178, 191, 189, 52, 108, 29, 111, 253, 195, 80, 83, 86, 4, 82, 163, 109, 41, 41, 234, 170, 49, 55, 206, 240, 9, 182, 93, 226, 191, 45, 133, 76, 161, 70, 86, 233, 149, 162, 101, 254, 208, 99, 3, 148, 151, 87, 231, 41, 68, 210, 174, 98, 112, 101, 160, 124, 209, 155, 64, 202, 84, 179, 40, 136, 61, 160, 116, 223, 140, 141, 255, 174, 59, 64, 54, 96, 132, 105, 21, 54, 168, 197, 177, 122, 78, 160, 72, 5, 123, 28, 235, 233, 171, 54, 233, 19, 73, 176, 162, 125, 84, 38, 4 },
                             Role = 3,
                             Username = "admin"
                         });

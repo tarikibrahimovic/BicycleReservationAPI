@@ -14,6 +14,7 @@ namespace BicycleReservation.Domain.Repository
         IAdminRepository AdminRepository { get; }
         IStationRepository StationRepository { get; }
         IBicycleRepository BicycleRepository { get; }
+        IClientRepository ClientRepository { get; }
         int Save();
     }
 }
