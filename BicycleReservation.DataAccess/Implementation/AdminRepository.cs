@@ -1,15 +1,11 @@
 ﻿using BicycleReservation.DataAccess.Context;
 using BicycleReservation.Domain.DTO.Admin;
+using BicycleReservation.Domain.DTO.User;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BicycleReservation.DataAccess.Implementation
 {
@@ -19,6 +15,32 @@ namespace BicycleReservation.DataAccess.Implementation
         public AdminRepository(DataContext context, IHttpContextAccessor acc) : base(context)
         {
             _acc = acc;
+        }
+
+        public async Task<List<UserDTO>> GetAllUsers()
+        {
+            try
+            {
+                var users = await context.Users.Include(u => u.Credits).Where(u => u.IsActive == true).Select(x => new UserDTO
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    Email = x.Email,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    ImageUrl = x.ImageUrl,
+                    Credits = x.Credits.Credits == null ? 0 : x.Credits.Credits,
+                    Role = x.Role,
+                    Verified = x.VerificationToken != null ? false : true
+                }).ToListAsync();
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<Bicycle> AddBicycle(int stationId, AddBicycleRequest request)
@@ -104,8 +126,8 @@ namespace BicycleReservation.DataAccess.Implementation
                 User user = await context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId && x.IsActive == true);
                 if(user == null)
                     throw new Exception("User does not exist!");
-                if(user.Role == Role.Admin)
-                    throw new Exception("User is already admin!");
+                //if(user.Role == Role.Admin)
+                //    throw new Exception("User is already admin!");
                 if(request.Role == user.Role)
                 {
                     throw new Exception("User is already that role!");

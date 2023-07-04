@@ -46,5 +46,12 @@ namespace BicycleReservation.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await unitOfWork.AdminRepository.GetAllUsers();
+            return Ok(users);
+        }
+
     }
 }
