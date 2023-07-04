@@ -1,18 +1,11 @@
 ﻿using BicycleReservation.DataAccess.Context;
 using BicycleReservation.Domain.DTO.Admin;
-using BicycleReservation.Domain.DTO.Auth;
 using BicycleReservation.Domain.DTO.User;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BicycleReservation.DataAccess.Implementation
 {
@@ -28,7 +21,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                var users = context.Users.Include(u => u.Credits).Select(x => new UserDTO
+                var users = await context.Users.Include(u => u.Credits).Where(u => u.IsActive == true).Select(x => new UserDTO
                 {
                     Id = x.Id,
                     Username = x.Username,
@@ -36,10 +29,10 @@ namespace BicycleReservation.DataAccess.Implementation
                     FirstName = x.FirstName,
                     LastName = x.LastName,
                     ImageUrl = x.ImageUrl,
-                    Credits = x.Credits.Credits,
+                    Credits = x.Credits.Credits == null ? 0 : x.Credits.Credits,
                     Role = x.Role,
                     Verified = x.VerificationToken != null ? false : true
-                }).ToList();
+                }).ToListAsync();
 
                 return users;
             }
@@ -133,8 +126,8 @@ namespace BicycleReservation.DataAccess.Implementation
                 User user = await context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId && x.IsActive == true);
                 if(user == null)
                     throw new Exception("User does not exist!");
-                if(user.Role == Role.Admin)
-                    throw new Exception("User is already admin!");
+                //if(user.Role == Role.Admin)
+                //    throw new Exception("User is already admin!");
                 if(request.Role == user.Role)
                 {
                     throw new Exception("User is already that role!");
