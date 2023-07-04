@@ -19,7 +19,7 @@ namespace BicycleReservation.Domain.Entities
     {
         [Key]
         public string Id { get; set; }
-        public string Naziv { get; set; }
+        public string Name { get; set; }
         public string LockCode { get; set; }
         public BicycleType Type { get; set; }
     }

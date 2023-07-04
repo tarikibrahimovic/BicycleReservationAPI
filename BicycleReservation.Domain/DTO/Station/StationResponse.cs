@@ -11,5 +11,6 @@ namespace BicycleReservation.Domain.DTO.Station
     {
         public List<Bicycle> Bicycles { get; set; }
         public BicycleReservation.Domain.Entities.Station Station { get; set; }
+        public bool HasRentedBike { get; set; } = false;
     }
 }
