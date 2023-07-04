@@ -9,10 +9,10 @@ namespace BicycleReservation.Domain.Entities
     public class Breakdown
     {
         public int Id { get; set; }
-        public int BicycleId { get; set; }
-        public Bicycle Bicycle { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; } = string.Empty;
         public DateTime? ResolvedDate { get; set; }
+        public string BicycleId { get; set; }
+        public Bicycle Bicycle { get; set; } = null!;
     }
 }

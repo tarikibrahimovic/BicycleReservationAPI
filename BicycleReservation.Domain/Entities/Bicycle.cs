@@ -22,6 +22,7 @@ namespace BicycleReservation.Domain.Entities
         public string Name { get; set; }
         public string LockCode { get; set; }
         public BicycleType Type { get; set; }
-        public List<Breakdown>? Breakdowns { get; set; }
+        public IEnumerable<Breakdown>? Breakdowns { get; set; }
+        public IEnumerable<Record>? Records { get; set; }
     }
 }

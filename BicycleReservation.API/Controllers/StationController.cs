@@ -1,4 +1,6 @@
-﻿using BicycleReservation.Domain.Repository;
+﻿using BicycleReservation.Domain.DTO.Servicer;
+using BicycleReservation.Domain.DTO.User;
+using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +28,13 @@ namespace BicycleReservation.API.Controllers
         public async Task<IActionResult> GetStation(int id)
         {
             var stations = await unitOfWork.StationRepository.GetStation(id);
+            return Ok(stations);
+        }
+
+        [HttpPost("PrijavaGreske")]
+        public async Task<IActionResult> PrijavaGreske(GreskaRequest request)
+        {
+            var stations = await unitOfWork.StationRepository.PrijavaGreske(request);
             return Ok(stations);
         }
     }
