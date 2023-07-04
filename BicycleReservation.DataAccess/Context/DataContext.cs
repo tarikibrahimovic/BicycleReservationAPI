@@ -56,5 +56,6 @@ namespace BicycleReservation.DataAccess.Context
         public DbSet<Bicycle> Bicycles { get; set; }
         public DbSet<Record> Records { get; set; }
         public DbSet<UserCredits> Credits { get; set; }
+        public DbSet<Breakdown> Breakdowns { get; set; }
     }
 }
