@@ -1,5 +1,7 @@
 ﻿using BicycleReservation.DataAccess.Context;
 using BicycleReservation.Domain.DTO.Admin;
+using BicycleReservation.Domain.DTO.Auth;
+using BicycleReservation.Domain.DTO.User;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BicycleReservation.DataAccess.Implementation
@@ -19,6 +22,32 @@ namespace BicycleReservation.DataAccess.Implementation
         public AdminRepository(DataContext context, IHttpContextAccessor acc) : base(context)
         {
             _acc = acc;
+        }
+
+        public async Task<List<UserDTO>> GetAllUsers()
+        {
+            try
+            {
+                var users = context.Users.Include(u => u.Credits).Select(x => new UserDTO
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    Email = x.Email,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    ImageUrl = x.ImageUrl,
+                    Credits = x.Credits.Credits,
+                    Role = x.Role,
+                    Verified = x.VerificationToken != null ? false : true
+                }).ToList();
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<Bicycle> AddBicycle(int stationId, AddBicycleRequest request)
