@@ -110,7 +110,7 @@ namespace BicycleReservation.DataAccess.Implementation
         public async Task<List<BicycleWithService>> GetBicyclesWithServices()
         {
             // Returns all bicycles ordered by the date of the last service. Returns them with all the services
-            var bicycles = await context.Bicycles.Include(x => x.Services).OrderByDescending(x => x.Services.Max(x => x.ServiceDate)).Select(x => new BicycleWithService()
+            var bicycles = await context.Bicycles.Include(x => x.Services).OrderBy(x => x.Services.Max(x => x.ServiceDate)).Select(x => new BicycleWithService()
             {
                 Bicycle = x,
                 ServiceDate = x.Services.Max(x => x.ServiceDate)
