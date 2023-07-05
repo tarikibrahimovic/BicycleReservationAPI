@@ -10,7 +10,7 @@ namespace BicycleReservation.Domain.Entities
     public enum Role
     {
         Servicer,
-        Menagement,
+        Manager,
         Client,
         Admin
     }
