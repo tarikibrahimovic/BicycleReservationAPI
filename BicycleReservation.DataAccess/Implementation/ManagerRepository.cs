@@ -31,7 +31,7 @@ namespace BicycleReservation.DataAccess.Implementation
 
             return new BicycleStatisticsResponse()
             {
-                NumberOfRents = numberOfRents,
+                Rents = numberOfRents,
                 HoursRented = hoursRented,
                 CreditsSpent = creditsSpent ?? 0,
                 TimesServiced = timesServiced,
@@ -51,9 +51,9 @@ namespace BicycleReservation.DataAccess.Implementation
 
             return new OverallStatisticsResponse()
             {
-                NumberOfStations = numberOfStations,
-                NumberOfBicycles = numberOfBicycles,
-                NumberOfRents = numberOfRents,
+                Stations = numberOfStations,
+                Bicycles = numberOfBicycles,
+                Rents = numberOfRents,
                 HoursRented = hoursRented,
                 CreditsSpent = creditsSpent ?? 0
             };
@@ -84,10 +84,10 @@ namespace BicycleReservation.DataAccess.Implementation
 
             return new StationStatisticsResponse()
             {
-                NumberOfArrivals = numberOfArrivals,
-                NumberOfDepartures = numberOfDepartures,
-                NumberOfBicycles = numberOfBicycles,
-                NumberOfBreakdowns = numberOfBreakdowns
+                Arrivals = numberOfArrivals,
+                Departures = numberOfDepartures,
+                Bicycles = numberOfBicycles,
+                Breakdowns = numberOfBreakdowns
             };
         }
     }

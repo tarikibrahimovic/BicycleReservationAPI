@@ -8,7 +8,7 @@ namespace BicycleReservation.Domain.DTO.Manager
 {
     public class BicycleStatisticsResponse
     {
-        public int NumberOfRents { get; set; }
+        public int Rents { get; set; }
         public int HoursRented { get; set; }
         public double CreditsSpent { get; set; }
         public int TimesServiced { get; set; }
