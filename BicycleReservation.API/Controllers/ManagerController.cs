@@ -9,7 +9,7 @@ namespace BicycleReservation.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Manager")]
     public class ManagerController : ControllerBase
     {
         private readonly IMediator mediator;
