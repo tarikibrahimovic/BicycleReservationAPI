@@ -38,7 +38,7 @@ namespace BicycleReservation.DataAccess.Implementation
                 .GroupBy(x => x.r.BicycleId)
                 .Select(x => x.OrderByDescending(y => y.r.StartDate).Select(x => x.r).FirstOrDefault())
                 .ToList();
-            var bicycles = await Task.Run(() => records.Where(x => x.EndStationId != null && x.Bicycle.Breakdowns.Any(b => b.ResolvedDate != null)).Select(x => new
+            var bicycles = await Task.Run(() => records.Where(x => x.EndStationId != null && x.Bicycle.Breakdowns.Any(b => b.ResolvedDate == null)).Select(x => new
             {
                 x.Bicycle,
                 Station = x.EndStation,
