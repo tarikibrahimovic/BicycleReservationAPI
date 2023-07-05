@@ -1,0 +1,14 @@
+﻿using BicycleReservation.Domain.DTO.Manager;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BicycleReservation.Domain.Resources.Queries
+{
+    public class GetOverallStatisticsQuery : IRequest<OverallStatisticsResponse>
+    {
+    }
+}

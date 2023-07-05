@@ -25,6 +25,7 @@ namespace BicycleReservation.DataAccess.Implementation
             BicycleRepository = new BicycleRepository(context);
             ClientRepository = new ClientRepository(context, acc);
             ServicerRepository = new ServicerRepository(context, acc);
+            ManagerRepository = new ManagerRepository(context);
         }
 
         public IUserRepository UserRepository { get; set; }
@@ -34,6 +35,7 @@ namespace BicycleReservation.DataAccess.Implementation
         public IBicycleRepository BicycleRepository { get; set; }
         public IClientRepository ClientRepository { get; set; }
         public IServicerRepository ServicerRepository { get; set; }
+        public IManagerRepository ManagerRepository { get; set; }
         
         public int Save()
         {
