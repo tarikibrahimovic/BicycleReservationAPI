@@ -1,5 +1,6 @@
 ﻿using BicycleReservation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
@@ -57,5 +58,6 @@ namespace BicycleReservation.DataAccess.Context
         public DbSet<Record> Records { get; set; }
         public DbSet<UserCredits> Credits { get; set; }
         public DbSet<Breakdown> Breakdowns { get; set; }
+        public DbSet<Service> Services { get; set; }
     }
 }

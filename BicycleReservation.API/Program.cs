@@ -2,9 +2,11 @@ using BicycleReservation.API.Middleware;
 using BicycleReservation.DataAccess.Context;
 using BicycleReservation.DataAccess.Implementation;
 using BicycleReservation.Domain.Repository;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using static System.Net.WebRequestMethods;
@@ -22,6 +24,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// registering mediatr for all projects
+builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
 //registering unit of work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

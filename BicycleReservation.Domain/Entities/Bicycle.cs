@@ -24,5 +24,6 @@ namespace BicycleReservation.Domain.Entities
         public BicycleType Type { get; set; }
         public IEnumerable<Breakdown>? Breakdowns { get; set; }
         public IEnumerable<Record>? Records { get; set; }
+        public IEnumerable<Service>? Services { get; set; } = new List<Service>();
     }
 }
