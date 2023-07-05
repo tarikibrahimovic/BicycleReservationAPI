@@ -38,7 +38,7 @@ namespace BicycleReservation.DataAccess.Implementation
                 .GroupBy(x => x.r.BicycleId)
                 .Select(x => x.OrderByDescending(y => y.r.StartDate).Select(x => x.r).FirstOrDefault())
                 .ToList();
-            var bicycles = await Task.Run(() => records.Where(x => x.EndStationId != null && x.Bicycle.Breakdowns.Any(b => b.ResolvedDate != null)).Select(x => new
+            var bicycles = await Task.Run(() => records.Where(x => x.EndStationId != null && x.Bicycle.Breakdowns.Any(b => b.ResolvedDate == null)).Select(x => new
             {
                 x.Bicycle,
                 Station = x.EndStation,
@@ -110,7 +110,7 @@ namespace BicycleReservation.DataAccess.Implementation
         public async Task<List<BicycleWithService>> GetBicyclesWithServices()
         {
             // Returns all bicycles ordered by the date of the last service. Returns them with all the services
-            var bicycles = await context.Bicycles.Include(x => x.Services).OrderByDescending(x => x.Services.Max(x => x.ServiceDate)).Select(x => new BicycleWithService()
+            var bicycles = await context.Bicycles.Include(x => x.Services).OrderBy(x => x.Services.Max(x => x.ServiceDate)).Select(x => new BicycleWithService()
             {
                 Bicycle = x,
                 ServiceDate = x.Services.Max(x => x.ServiceDate)
