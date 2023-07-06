@@ -1,5 +1,5 @@
-﻿using BicycleReservation.Domain.DTO.Station;
-using BicycleReservation.Domain.DTO.User;
+﻿using BicycleReservation.Domain.DTO.Client;
+using BicycleReservation.Domain.DTO.Station;
 using BicycleReservation.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,5 @@ namespace BicycleReservation.Domain.Repository
     {
         public Task<List<Station>> GetAll();
         public Task<StationResponse> GetStation(int id);
-        public Task<bool> PrijavaGreske(GreskaRequest request);
     }
 }

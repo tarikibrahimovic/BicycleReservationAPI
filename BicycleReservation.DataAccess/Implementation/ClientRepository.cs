@@ -99,5 +99,25 @@ namespace BicycleReservation.DataAccess.Implementation
             int userId = int.Parse(acc.HttpContext.User.FindFirst(ClaimTypes.PrimarySid).Value);
             return await context.Records.Include(r => r.Bicycle).Include(r => r.StartStation).Include(r => r.EndStation).Where(r => r.UserId == userId).OrderByDescending(r => r.StartDate).ToListAsync();
         }
+
+
+        public async Task<bool> BreakdownReport(BicycleBreakdownRequest request)
+        {
+            var breakdown = await context.Breakdowns.FirstOrDefaultAsync(x => x.BicycleId == request.BicycleId && x.ResolvedDate == null);
+            if (breakdown != null)
+            {
+                throw new Exception("Breakdown already reported");
+            }
+            var bicycle = await context.Bicycles.FirstOrDefaultAsync(x => x.Id == request.BicycleId);
+            Breakdown breakdown1 = new Breakdown
+            {
+                Bicycle = bicycle,
+                Description = request.Description,
+                Date = DateTime.UtcNow
+            };
+            await context.Breakdowns.AddAsync(breakdown1);
+            await context.SaveChangesAsync();
+            return true;
+        }
     }
 }

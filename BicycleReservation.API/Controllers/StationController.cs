@@ -30,12 +30,5 @@ namespace BicycleReservation.API.Controllers
             var stations = await unitOfWork.StationRepository.GetStation(id);
             return Ok(stations);
         }
-
-        [HttpPost("prijava-kvara")]
-        public async Task<IActionResult> PrijavaGreske(GreskaRequest request)
-        {
-            var stations = await unitOfWork.StationRepository.PrijavaGreske(request);
-            return Ok(stations);
-        }
     }
 }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BicycleReservation.Domain.DTO.User
+namespace BicycleReservation.Domain.DTO.Client
 {
-    public class GreskaRequest
+    public class BicycleBreakdownRequest
     {
         public string BicycleId { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

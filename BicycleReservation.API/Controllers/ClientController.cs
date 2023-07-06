@@ -38,5 +38,12 @@ namespace BicycleReservation.API.Controllers
             var response = await unitOfWork.ClientRepository.GetRents();
             return Ok(response);
         }
+
+        [HttpPost("report-breakdown")]
+        public async Task<IActionResult> PrijavaGreske(BicycleBreakdownRequest request)
+        {
+            var stations = await unitOfWork.ClientRepository.BreakdownReport(request);
+            return Ok(stations);
+        }
     }
 }

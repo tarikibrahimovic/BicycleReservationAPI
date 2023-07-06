@@ -1,6 +1,6 @@
 ﻿using BicycleReservation.DataAccess.Context;
+using BicycleReservation.Domain.DTO.Client;
 using BicycleReservation.Domain.DTO.Station;
-using BicycleReservation.Domain.DTO.User;
 using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
@@ -20,25 +20,6 @@ namespace BicycleReservation.DataAccess.Implementation
         public StationRepository(DataContext context, IHttpContextAccessor acc) : base(context)
         {
             _acc = acc;
-        }
-
-        public async Task<bool> PrijavaGreske(GreskaRequest request)
-        {
-            var breakdown = await context.Breakdowns.FirstOrDefaultAsync(x => x.BicycleId == request.BicycleId && x.ResolvedDate == null);
-            if (breakdown != null)
-            {
-                throw new Exception("Breakdown already reported");
-            }
-            var bicycle = await context.Bicycles.FirstOrDefaultAsync(x => x.Id == request.BicycleId);
-            Breakdown breakdown1 = new Breakdown
-            {
-                Bicycle = bicycle,
-                Description = request.Description,
-                Date = DateTime.UtcNow
-            };
-            await context.Breakdowns.AddAsync(breakdown1);
-            await context.SaveChangesAsync();
-            return true;
         }
 
         public async Task<List<Station>> GetAll()
