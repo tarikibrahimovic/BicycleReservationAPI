@@ -57,6 +57,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //registering middleware as a service
 builder.Services.AddTransient<GlobalExcetionHandlingMiddleware>();
 
+
+// add logging to the application, and add file logging
+// builder.Services.AddTransient<GlobalLoggingMiddleware>();
+
 //registering configuration for all projects
 builder.Services.AddSingleton(builder.Configuration);
 
@@ -72,6 +76,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 
 app.UseMiddleware<GlobalExcetionHandlingMiddleware>();
+app.UseMiddleware<GlobalLoggingMiddleware>();
 
 app.UseCors("AllowAllOrigins");
 
