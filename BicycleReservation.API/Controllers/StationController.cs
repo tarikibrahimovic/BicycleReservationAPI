@@ -31,7 +31,7 @@ namespace BicycleReservation.API.Controllers
             return Ok(stations);
         }
 
-        [HttpPost("PrijavaGreske")]
+        [HttpPost("prijava-kvara")]
         public async Task<IActionResult> PrijavaGreske(GreskaRequest request)
         {
             var stations = await unitOfWork.StationRepository.PrijavaGreske(request);
