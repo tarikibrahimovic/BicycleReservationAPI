@@ -180,7 +180,7 @@ namespace BicycleReservation.DataAccess.Implementation
 
                 user.Credits = credits;
 
-                // SendEmail(request.Email, "Your verification token is:" + code.ToString());
+                SendEmail(request.Email, "Your verification token is:" + code.ToString());
                 await context.Users.AddAsync(user);
                 await context.Credits.AddAsync(credits);
                 await context.SaveChangesAsync();
