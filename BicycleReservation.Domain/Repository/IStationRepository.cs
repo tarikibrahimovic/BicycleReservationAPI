@@ -12,6 +12,6 @@ namespace BicycleReservation.Domain.Repository
     public interface IStationRepository : IGenericRepository<Station, int>
     {
         public Task<List<Station>> GetAll();
-        public Task<StationResponse> GetStation(int id);
+        public Task<StationResponse> GetStation(int id, BicycleType? bicycleType = null, int? pageNumber = null, int? pageSize = null);
     }
 }
