@@ -1,5 +1,6 @@
 ﻿using BicycleReservation.Domain.DTO.Servicer;
 using BicycleReservation.Domain.DTO.User;
+using BicycleReservation.Domain.Entities;
 using BicycleReservation.Domain.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace BicycleReservation.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetStation(int id)
+        public async Task<IActionResult> GetStation(int id, BicycleType? bicycleType = null, int? pageNumber = null, int? pageSize = null)
         {
-            var stations = await unitOfWork.StationRepository.GetStation(id);
+            var stations = await unitOfWork.StationRepository.GetStation(id, bicycleType, pageNumber, pageSize);
             return Ok(stations);
         }
     }

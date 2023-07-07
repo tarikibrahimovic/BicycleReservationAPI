@@ -27,7 +27,7 @@ namespace BicycleReservation.DataAccess.Implementation
             return await Task.Run(() => context.Stations.ToList());
         }
 
-        public async Task<StationResponse> GetStation(int id)
+        public async Task<StationResponse> GetStation(int id, BicycleType? bicycleType = null, int? pageNumber = null, int? pageSize = null)
         {
             var converted = int.TryParse(_acc?.HttpContext?.User?.FindFirst(ClaimTypes.PrimarySid)?.Value, out int userId);
             var station = await Task.Run(() => context.Stations.FirstOrDefault(x => x.Id == id)) ?? throw new Exception("Station does not exist");
@@ -47,10 +47,25 @@ namespace BicycleReservation.DataAccess.Implementation
             if(userRole == null || (userRole != Role.Admin.ToString() && userRole != Role.Servicer.ToString()))
                 bicycles.ForEach(x => x.LockCode = "");
 
+            if(bicycleType != null)
+                bicycles = bicycles.Where(x => x.Type == bicycleType).ToList();
+
+            var length = bicycles.Count;
+            var numberOfPages = 0;
+
+            if(pageNumber != null && pageSize != null)
+            {
+                bicycles = bicycles.Skip((int)pageNumber * (int)pageSize).Take((int)pageSize).ToList();
+                numberOfPages = (int)Math.Ceiling((double)length / (int)pageSize);
+            }
+                
+
             var response = new StationResponse
             {
                 Station = station,
-                Bicycles = bicycles
+                Bicycles = bicycles,
+                Length = length,
+                Pages = numberOfPages
             };
 
             if(converted)
