@@ -17,6 +17,7 @@ namespace BicycleReservation.Domain.DTO.User
         public string LastName { get; set; } = string.Empty;
         public string? ImageUrl { get; set; } = string.Empty;
         public double Credits { get; set; }
+        public bool IsGoogle { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Role Role { get; set; }
         public bool Verified { get; set; }

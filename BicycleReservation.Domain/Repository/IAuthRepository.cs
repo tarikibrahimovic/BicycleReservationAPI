@@ -18,5 +18,6 @@ namespace BicycleReservation.Domain.Repository
         public Task<SendEmailRequest> ResetPassword(ResetPassword request);
         public Task<SendEmailRequest> ResendVerificationToken(SendEmailRequest request);
         public Task<LoginResponse> CheckToken();
+        public Task<LoginResponse> GoogleLogin(GoogleRequest request);
     }
 }

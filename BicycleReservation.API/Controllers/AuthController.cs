@@ -28,6 +28,17 @@ namespace BicycleReservation.API.Controllers
             return Ok(userFromDb);
         }
 
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleRequest request)
+        {
+            var userFromDb = await unitOfWork.AuthRepository.GoogleLogin(request);
+            if (userFromDb == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(userFromDb);
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {

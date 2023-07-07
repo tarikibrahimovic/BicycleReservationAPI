@@ -72,6 +72,90 @@ namespace BicycleReservation.DataAccess.Implementation
             return jwt;
         }
 
+        public async Task<LoginResponse> GoogleLogin(GoogleRequest request)
+        {
+            User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
+            if (request.Id == null && request.Email.Contains("@"))
+            {
+                throw new Exception("Invalid credentials");
+            }
+            if(user == null)
+            {
+                CreatePasswordHash(request.Id, out byte[] passwordHash, out byte[] passwordSalt);
+                user = new User
+                {
+                    Email = request.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    PasswordHash = passwordHash,
+                    VerificationToken = null,
+                    PasswordSalt = passwordSalt,
+                    IsActive = true,
+                    IsGoogle = true,
+                    Role = Role.Client,
+                    ImageUrl = request.ImageUrl,
+                    Username = request.Username,
+                    Credits = new UserCredits
+                    {
+                        Credits = 100
+                    }
+                };
+                await context.Credits.AddAsync(user.Credits);
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
+                string jwt = CreateToken(user);
+                return new LoginResponse
+                {
+                    User = new Domain.DTO.User.UserDTO()
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Username = user.Username,
+                        Role = user.Role,
+                        IsGoogle = user.IsGoogle,
+                        Credits = user.Credits.Credits,
+                        Verified = true,
+                        ImageUrl = user.ImageUrl,
+                    },
+                    Token = jwt,
+                };
+            }
+            else
+            {
+                if(user.IsGoogle == true)
+                {
+                    if(!VerifyPasswordHash(request.Id, user.PasswordHash, user.PasswordSalt))
+                    {
+                        throw new Exception("Invalid credentials");
+                    }
+                    string jwt = CreateToken(user);
+                    return new LoginResponse
+                    {
+                        User = new Domain.DTO.User.UserDTO()
+                        {
+                            Id = user.Id,
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Username = user.Username,
+                            Role = user.Role,
+                            IsGoogle = user.IsGoogle,
+                            Credits = user.Credits.Credits,
+                            Verified = true,
+                            ImageUrl = user.ImageUrl,
+                        },
+                        Token = jwt,
+                    };
+                }
+                else
+                {
+                    throw new Exception("User with that email already exists!");
+                }
+            }
+        }
+
         public int GetUserId(string token)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -84,7 +168,6 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             var sender = _configuration.GetSection("Mail").GetSection("email").Value;
             var password = _configuration.GetSection("Mail").GetSection("password").Value;
-            Console.WriteLine(sender + password);
             var emailSender = new MimeMessage();
             emailSender.From.Add(new MailboxAddress("Bicycle Reservation", sender));
             emailSender.To.Add(MailboxAddress.Parse(email));
@@ -129,6 +212,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         Role = user.Role,
                         Credits = credits,
                         Verified = verified,
+                        IsGoogle = user.IsGoogle,
                         ImageUrl = user.ImageUrl,
                     },
                     Token = jwt,
@@ -167,6 +251,7 @@ namespace BicycleReservation.DataAccess.Implementation
                     Username = request.Username,
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,
+                    IsGoogle = false,
                     Role = Role.Client,
                     IsActive = true,
                     VerificationToken = code.ToString(),
@@ -195,6 +280,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         LastName = user.LastName,
                         Username = user.Username,
                         Role = user.Role,
+                        IsGoogle = user.IsGoogle,
                         Credits = user.Credits.Credits,
                         Verified = user.VerificationToken != null ? false : true,
                         ImageUrl = user.ImageUrl,
@@ -212,7 +298,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
+                User user = await context.Users.Include(u => u.Credits).FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true && x.IsGoogle == false);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -238,6 +324,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         LastName = user.LastName,
                         Username = user.Username,
                         Role = user.Role,
+                        IsGoogle = user.IsGoogle,
                         Credits = user.Credits.Credits,
                         Verified = user.VerificationToken != null ? false : true,
                         ImageUrl = user.ImageUrl,
@@ -255,7 +342,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true && x.IsGoogle == false);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -279,7 +366,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true && x.IsGoogle == false);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -307,7 +394,7 @@ namespace BicycleReservation.DataAccess.Implementation
         {
             try
             {
-                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true);
+                User user = await context.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.IsActive == true && x.IsGoogle == false);
                 if (user == null)
                 {
                     throw new Exception("Email does not exist");
@@ -357,6 +444,7 @@ namespace BicycleReservation.DataAccess.Implementation
                         Role = user.Role,
                         Credits = credits,
                         Verified = verified,
+                        IsGoogle = user.IsGoogle,
                         ImageUrl = user.ImageUrl,
                     },
                     Token = jwt,
